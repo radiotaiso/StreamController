@@ -34,7 +34,7 @@ jobs:
       - name: Sync with upstream
         run: |
           git fetch upstream
-          git merge upstream/main --no-edit || (git status && git diff && exit 1)
+          git merge upstream/main --no-edit --allow-unrelated-histories || (git status && git diff && exit 1)
           git push origin rpm-autobuild
 
       - name: Build RPM
