@@ -71,8 +71,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           VERSION=${{ steps.get_version.outputs.version }}
-          gh release view v$VERSION || \
+          gh release view v$VERSION --repo ${{ github.repository }} || \
             gh release create v$VERSION \
+              --repo ${{ github.repository }} \
               --title "Release v$VERSION" \
               --notes "Automated release based on upstream changes.\nBuilt from main branch with local RPM files."
 
@@ -81,7 +82,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           VERSION=${{ steps.get_version.outputs.version }}
-          gh release upload v$VERSION /github/home/rpmbuild/RPMS/x86_64/streamcontroller-${VERSION}-1.fc42.x86_64.rpm --clobber
+          gh release upload v$VERSION /github/home/rpmbuild/RPMS/x86_64/streamcontroller-${VERSION}-1.fc42.x86_64.rpm --clobber --repo ${{ github.repository }}
 
       - name: Cleanup Temporary Branch
         run: |
