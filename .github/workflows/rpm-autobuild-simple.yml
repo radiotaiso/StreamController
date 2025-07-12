@@ -20,11 +20,19 @@ jobs:
           ref: 'main'
           path: 'rpmfiles'
 
-      - name: Download upstream source (latest main)
+      - name: Get latest upstream tag
+        id: get_tag
+        run: |
+          git ls-remote --tags https://github.com/StreamController/StreamController.git | awk '{print $2}' | grep -E '^refs/tags/[0-9]' | sed 's|refs/tags/||' | sort -V | tail -n1 > latest_tag.txt
+          TAG=$(cat latest_tag.txt)
+          echo "Latest tag: $TAG"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+
+      - name: Download upstream source (latest tag)
         uses: actions/checkout@v4
         with:
           repository: 'StreamController/StreamController'
-          ref: 'main'
+          ref: ${{ steps.get_tag.outputs.tag }}
           path: 'upstreamsrc'
 
       - name: Prepare build directory
@@ -32,6 +40,10 @@ jobs:
           mkdir -p buildroot
           rsync -a upstreamsrc/ buildroot/
           rsync -a rpmfiles/rpm/ buildroot/rpm/
+
+      - name: Set RPM version to match tag
+        run: |
+          sed -i "s/^Version:.*/Version:        ${{ steps.get_tag.outputs.tag }}/" buildroot/rpm/StreamController.spec
 
       - name: Install Python Dependencies
         run: |
@@ -43,12 +55,6 @@ jobs:
           cd buildroot/rpm
           make rpm
 
-      - name: Get Version
-        id: get_version
-        run: |
-          VERSION=$(grep -m 1 'Version:' buildroot/rpm/StreamController.spec | awk '{print $2}')
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-
       - name: Create Temporary Build Branch
         run: |
           cd buildroot
@@ -58,7 +64,7 @@ jobs:
           git config user.email "actions@github.com"
           git checkout -b rpm-autobuild-tmp
           git add .
-          git commit -m "Automated RPM build for version ${{ steps.get_version.outputs.version }}"
+          git commit -m "Automated RPM build for version ${{ steps.get_tag.outputs.tag }}"
           git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           git push --force origin rpm-autobuild-tmp
 
@@ -70,19 +76,19 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          VERSION=${{ steps.get_version.outputs.version }}
-          gh release view v$VERSION --repo ${{ github.repository }} || \
-            gh release create v$VERSION \
+          TAG=${{ steps.get_tag.outputs.tag }}
+          gh release view $TAG --repo ${{ github.repository }} || \
+            gh release create $TAG \
               --repo ${{ github.repository }} \
-              --title "Release v$VERSION" \
-              --notes "Automated release based on upstream changes.\nBuilt from main branch with local RPM files."
+              --title "Release $TAG" \
+              --notes "Automated release based on upstream tag $TAG.\nBuilt from tag with local RPM files."
 
       - name: Upload RPM Asset with gh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          VERSION=${{ steps.get_version.outputs.version }}
-          gh release upload v$VERSION /github/home/rpmbuild/RPMS/x86_64/streamcontroller-${VERSION}-1.fc42.x86_64.rpm --clobber --repo ${{ github.repository }}
+          TAG=${{ steps.get_tag.outputs.tag }}
+          gh release upload $TAG /github/home/rpmbuild/RPMS/x86_64/streamcontroller-${TAG}-1.fc42.x86_64.rpm --clobber --repo ${{ github.repository }}
 
       - name: Cleanup Temporary Branch
         run: |
