@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: Install System Dependencies
-        run: dnf install -y git rpm-build desktop-file-utils python3-devel python3-pip python3-setuptools python3-wheel make cairo-devel cairo-gobject-devel gobject-introspection-devel gcc gcc-c++ dbus-devel dbus-x11 rsync
+        run: dnf install -y git rpm-build desktop-file-utils python3-devel python3-pip python3-setuptools python3-wheel make cairo-devel cairo-gobject-devel gobject-introspection-devel gcc gcc-c++ dbus-devel dbus-x11 rsync hicolor-icon-theme
 
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -61,14 +61,14 @@ jobs:
         id: version_check
         run: |
           CURRENT_VERSION=$(grep -m 1 'Version:' rpm/StreamController.spec | awk '{print $2}')
-          echo "::set-output name=version::$CURRENT_VERSION"
+          echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
           
           # Check if this version already has a release
           if git tag -l "v$CURRENT_VERSION" | grep -q "v$CURRENT_VERSION"; then
-            echo "::set-output name=skip_release::true"
+            echo "skip_release=true" >> $GITHUB_OUTPUT
             echo "Version $CURRENT_VERSION already has a release, skipping..."
           else
-            echo "::set-output name=skip_release::false"
+            echo "skip_release=false" >> $GITHUB_OUTPUT
             echo "Building new version: $CURRENT_VERSION"
           fi
 
@@ -81,7 +81,7 @@ jobs:
       - name: Get Version
         if: steps.version_check.outputs.skip_release == 'false'
         id: get_version
-        run: echo "::set-output name=version::$(grep -m 1 'Version:' rpm/StreamController.spec | awk '{print $2}')"
+        run: echo "version=$(grep -m 1 'Version:' rpm/StreamController.spec | awk '{print $2}')" >> $GITHUB_OUTPUT
 
       - name: Create Release
         if: steps.version_check.outputs.skip_release == 'false'
