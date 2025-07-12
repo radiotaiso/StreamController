@@ -1,0 +1,117 @@
+name: RPM Autobuild
+
+on:
+  schedule:
+    - cron: '0 2 * * 0' # Runs weekly on Sunday at 2 AM UTC
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  sync-and-build:
+    runs-on: ubuntu-latest
+    container: fedora:latest
+
+    steps:
+      - name: Install System Dependencies
+        run: dnf install -y git rpm-build desktop-file-utils python3-devel python3-pip python3-setuptools python3-wheel make cairo-devel cairo-gobject-devel gobject-introspection-devel gcc gcc-c++ dbus-devel dbus-x11 rsync
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: 'rpm-autobuild'
+
+      - name: Install Python Dependencies
+        run: pip3 install -r requirements.txt
+
+      - name: Set up Git
+        run: |
+          git config --global --add safe.directory /__w/StreamController/StreamController
+          git config --global user.name "GitHub Botcho"
+          git config --global user.email "actions@github.com"
+
+      - name: Add upstream remote
+        run: git remote add upstream https://github.com/StreamController/StreamController.git
+
+      - name: Sync with upstream (reset-based)
+        run: |
+          # Fetch upstream changes
+          git fetch upstream
+          
+          # Save current RPM-specific files
+          mkdir -p /tmp/rpm-backup
+          cp -r rpm/ /tmp/rpm-backup/ || true
+          cp -r .github/ /tmp/rpm-backup/ || true
+          
+          # Reset to upstream main (this removes merge conflicts)
+          git reset --hard upstream/main
+          
+          # Restore RPM-specific files
+          cp -r /tmp/rpm-backup/rpm/ ./ || true
+          cp -r /tmp/rpm-backup/.github/ ./ || true
+          
+          # Add and commit changes if any
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "Sync with upstream and restore RPM build files"
+          fi
+          
+          # Force push to update the branch
+          git push origin rpm-autobuild --force
+
+      - name: Check for version changes
+        id: version_check
+        run: |
+          CURRENT_VERSION=$(grep -m 1 'Version:' rpm/StreamController.spec | awk '{print $2}')
+          echo "::set-output name=version::$CURRENT_VERSION"
+          
+          # Check if this version already has a release
+          if git tag -l "v$CURRENT_VERSION" | grep -q "v$CURRENT_VERSION"; then
+            echo "::set-output name=skip_release::true"
+            echo "Version $CURRENT_VERSION already has a release, skipping..."
+          else
+            echo "::set-output name=skip_release::false"
+            echo "Building new version: $CURRENT_VERSION"
+          fi
+
+      - name: Build RPM
+        if: steps.version_check.outputs.skip_release == 'false'
+        run: |
+          cd rpm
+          make rpm
+
+      - name: Get Version
+        if: steps.version_check.outputs.skip_release == 'false'
+        id: get_version
+        run: echo "::set-output name=version::$(grep -m 1 'Version:' rpm/StreamController.spec | awk '{print $2}')"
+
+      - name: Create Release
+        if: steps.version_check.outputs.skip_release == 'false'
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.get_version.outputs.version }}
+          release_name: Release v${{ steps.get_version.outputs.version }}
+          body: |
+            Automated release based on upstream changes.
+            
+            Changes synced from upstream StreamController/StreamController at commit: ${{ github.sha }}
+          draft: false
+          prerelease: false
+
+      - name: Upload RPM Asset
+        if: steps.version_check.outputs.skip_release == 'false'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ~/rpmbuild/RPMS/x86_64/streamcontroller-${{ steps.get_version.outputs.version }}-1.fc42.x86_64.rpm
+          asset_name: streamcontroller-${{ steps.get_version.outputs.version }}.rpm
+          asset_content_type: application/x-rpm
+
+      - name: Skip notification
+        if: steps.version_check.outputs.skip_release == 'true'
+        run: |
+          echo "No new version to build. Current version ${{ steps.version_check.outputs.version }} already has a release."
+          echo "Workflow completed successfully with no action needed."
