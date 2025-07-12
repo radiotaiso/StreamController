@@ -31,6 +31,15 @@ jobs:
       - name: Add upstream remote
         run: git remote add upstream https://github.com/StreamController/StreamController.git
 
+      - name: Debug - Show initial state
+        run: |
+          echo "=== Initial repository state ==="
+          echo "Current branch: $(git branch --show-current)"
+          echo "Current commit: $(git rev-parse HEAD)"
+          echo "RPM directory contents:"
+          ls -la rpm/ || echo "rpm directory does not exist"
+          echo "Spec file exists: $(test -f rpm/StreamController.spec && echo 'YES' || echo 'NO')"
+
       - name: Sync with upstream (reset-based)
         run: |
           # Fetch upstream changes
@@ -38,15 +47,33 @@ jobs:
           
           # Save current RPM-specific files
           mkdir -p /tmp/rpm-backup
-          cp -r rpm/ /tmp/rpm-backup/ || true
-          cp -r .github/ /tmp/rpm-backup/ || true
+          if [ -d "rpm" ]; then
+            cp -r rpm/ /tmp/rpm-backup/
+          fi
+          if [ -d ".github" ]; then
+            cp -r .github/ /tmp/rpm-backup/
+          fi
           
           # Reset to upstream main (this removes merge conflicts)
           git reset --hard upstream/main
           
           # Restore RPM-specific files
-          cp -r /tmp/rpm-backup/rpm/ ./ || true
-          cp -r /tmp/rpm-backup/.github/ ./ || true
+          if [ -d "/tmp/rpm-backup/rpm" ]; then
+            cp -r /tmp/rpm-backup/rpm/ ./
+          fi
+          if [ -d "/tmp/rpm-backup/.github" ]; then
+            cp -r /tmp/rpm-backup/.github/ ./
+          fi
+          
+          # Verify that the spec file exists after restore
+          if [ ! -f "rpm/StreamController.spec" ]; then
+            echo "ERROR: StreamController.spec file not found after restore!"
+            echo "Contents of rpm directory:"
+            ls -la rpm/ || echo "rpm directory does not exist"
+            echo "Contents of backup:"
+            ls -la /tmp/rpm-backup/ || echo "backup directory does not exist"
+            exit 1
+          fi
           
           # Add and commit changes if any
           git add -A
@@ -56,6 +83,18 @@ jobs:
           
           # Force push to update the branch
           git push origin rpm-autobuild --force
+
+      - name: Debug - Show final state
+        run: |
+          echo "=== Final repository state ==="
+          echo "Current branch: $(git branch --show-current)"
+          echo "Current commit: $(git rev-parse HEAD)"
+          echo "RPM directory contents:"
+          ls -la rpm/ || echo "rpm directory does not exist"
+          echo "Spec file exists: $(test -f rpm/StreamController.spec && echo 'YES' || echo 'NO')"
+          if [ -f "rpm/StreamController.spec" ]; then
+            echo "Spec file size: $(wc -l rpm/StreamController.spec)"
+          fi
 
       - name: Check for version changes
         id: version_check
