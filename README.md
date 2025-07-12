@@ -12,7 +12,7 @@
 
 This repo is only a wrapper with a github action set up to auto build a `.rpm` package of `StreamController` the motivation behind this is my despise for flatpaks and that I've been using fedora on main.
 
-The only changes are in `/rpm`; otherwise, it is the same as upstream. Check the [README inside `/rpm`](./rpm/README.md) for more info.
+The only changes are in `/rpm`; otherwise, it is the same as upstream. Check the [README](./rpm/README.md) inside for more info.
 
 ![Wait a minute tf2 scout](https://media1.tenor.com/m/aYNpQ7uZhR4AAAAd/tf2-scout.gif)
 
