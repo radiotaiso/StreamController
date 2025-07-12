@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: Install System Dependencies
-        run: dnf install -y git rpm-build desktop-file-utils python3-devel python3-pip python3-setuptools python3-wheel make cairo-devel cairo-gobject-devel gobject-introspection-devel gcc gcc-c++ dbus-devel dbus-x11 rsync hicolor-icon-theme
+        run: dnf install -y git gh rpm-build desktop-file-utils python3-devel python3-pip python3-setuptools python3-wheel make cairo-devel cairo-gobject-devel gobject-introspection-devel gcc gcc-c++ dbus-devel dbus-x11 rsync hicolor-icon-theme
 
       - name: Checkout RPM build files (main branch)
         uses: actions/checkout@v4
@@ -70,11 +70,7 @@ jobs:
           git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           git push --force origin rpm-autobuild-tmp
 
-      - name: Install GitHub CLI
-        run: |
-          dnf install -y gh
-
-      - name: Create Release with gh
+      - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -85,7 +81,7 @@ jobs:
               --title "Release $TAG" \
               --notes "Automated release based on upstream tag $TAG. \nBuilt from tag with local RPM files."
 
-      - name: Upload RPM Asset with gh
+      - name: Upload RPM Asset
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
