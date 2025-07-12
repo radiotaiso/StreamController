@@ -14,7 +14,7 @@ This repo is only a wrapper with a github action set up to auto build a `.rpm` p
 
 The only changes are in `/rpm` otherwise it is the same as upstream.
 
-![Wait a minute kid](https://media1.tenor.com/m/IJwsfw7ToiQAAAAd/wait-what.gif)
+![Wait a minute tf2 scout](https://media1.tenor.com/m/aYNpQ7uZhR4AAAAd/tf2-scout.gif)
 
 ## Back to regular programming
 
