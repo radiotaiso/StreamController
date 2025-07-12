@@ -1,0 +1,90 @@
+name: RPM Autobuild (Simple)
+
+on:
+  schedule:
+    - cron: '0 2 20 * *' # Runs monthly on the 20th at 2 AM UTC
+  workflow_dispatch:
+
+jobs:
+  build-rpm:
+    runs-on: ubuntu-latest
+    container: fedora:latest
+
+    steps:
+      - name: Install System Dependencies
+        run: dnf install -y git rpm-build desktop-file-utils python3-devel python3-pip python3-setuptools python3-wheel make cairo-devel cairo-gobject-devel gobject-introspection-devel gcc gcc-c++ dbus-devel dbus-x11 rsync hicolor-icon-theme
+
+      - name: Checkout RPM build files (main branch)
+        uses: actions/checkout@v4
+        with:
+          ref: 'main'
+          path: 'rpmfiles'
+
+      - name: Download upstream source (latest main)
+        uses: actions/checkout@v4
+        with:
+          repository: 'StreamController/StreamController'
+          ref: 'main'
+          path: 'upstreamsrc'
+
+      - name: Prepare build directory
+        run: |
+          mkdir -p buildroot
+          rsync -a upstreamsrc/ buildroot/
+          rsync -a rpmfiles/rpm/ buildroot/rpm/
+
+      - name: Install Python Dependencies
+        run: |
+          cd buildroot
+          pip3 install -r requirements.txt
+
+      - name: Build RPM
+        run: |
+          cd buildroot/rpm
+          make rpm
+
+      - name: Get Version
+        id: get_version
+        run: |
+          VERSION=$(grep -m 1 'Version:' buildroot/rpm/StreamController.spec | awk '{print $2}')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create Temporary Build Branch
+        run: |
+          cd buildroot
+          git init
+          git config user.name "GitHub Botcho"
+          git config user.email "actions@github.com"
+          git checkout -b rpm-autobuild-tmp
+          git add .
+          git commit -m "Automated RPM build for version ${{ steps.get_version.outputs.version }}"
+          git remote add origin https://github.com/${{ github.repository }}.git
+          git push --force origin rpm-autobuild-tmp
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.get_version.outputs.version }}
+          release_name: Release v${{ steps.get_version.outputs.version }}
+          body: |
+            Automated release based on upstream changes.
+            Built from main branch with local RPM files.
+          draft: false
+          prerelease: false
+
+      - name: Upload RPM Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: /github/home/rpmbuild/RPMS/x86_64/streamcontroller-${{ steps.get_version.outputs.version }}-1.fc42.x86_64.rpm
+          asset_name: streamcontroller-${{ steps.get_version.outputs.version }}.rpm
+          asset_content_type: application/x-rpm
+
+      - name: Cleanup Temporary Branch
+        run: |
+          git push origin --delete rpm-autobuild-tmp || true
