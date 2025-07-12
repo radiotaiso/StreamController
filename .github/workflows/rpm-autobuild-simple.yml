@@ -59,7 +59,7 @@ jobs:
           git checkout -b rpm-autobuild-tmp
           git add .
           git commit -m "Automated RPM build for version ${{ steps.get_version.outputs.version }}"
-          git remote add origin https://github.com/${{ github.repository }}.git
+          git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           git push --force origin rpm-autobuild-tmp
 
       - name: Create Release
