@@ -81,7 +81,7 @@ jobs:
             gh release create $TAG \
               --repo ${{ github.repository }} \
               --title "Release $TAG" \
-              --notes "Automated release based on upstream tag $TAG.\nBuilt from tag with local RPM files."
+              --notes "Automated release based on upstream tag $TAG. \nBuilt from tag with local RPM files."
 
       - name: Upload RPM Asset with gh
         env:
