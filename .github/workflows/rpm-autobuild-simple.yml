@@ -90,7 +90,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TAG=${{ steps.get_tag.outputs.tag }}
-          gh release upload $TAG /github/home/rpmbuild/RPMS/x86_64/streamcontroller-${TAG}-1.fc42.x86_64.rpm --clobber --repo ${{ github.repository }}
+          RPM_VERSION=$(echo "$TAG" | tr -d '-')
+          gh release upload $TAG /github/home/rpmbuild/RPMS/x86_64/streamcontroller-${RPM_VERSION}-1.fc42.x86_64.rpm --clobber --repo ${{ github.repository }}
 
       - name: Cleanup Temporary Branch
         run: |
