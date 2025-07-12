@@ -41,9 +41,11 @@ jobs:
           rsync -a upstreamsrc/ buildroot/
           rsync -a rpmfiles/rpm/ buildroot/rpm/
 
-      - name: Set RPM version to match tag
+      - name: Set RPM version to match tag (strip hyphens)
         run: |
-          sed -i "s/^Version:.*/Version:        ${{ steps.get_tag.outputs.tag }}/" buildroot/rpm/StreamController.spec
+          TAG=${{ steps.get_tag.outputs.tag }}
+          RPM_VERSION=$(echo "$TAG" | tr -d '-')
+          sed -i "s/^Version:.*/Version:        $RPM_VERSION/" buildroot/rpm/StreamController.spec
 
       - name: Install Python Dependencies
         run: |

@@ -2,7 +2,7 @@
 %define _python_bytecompile_extra 0
 
 Name:           streamcontroller
-Version:        1.5.2
+Version:        __VERSION__
 Release:        1%{?dist}
 Summary:        Elegant Linux application for Elgato Stream Deck with plugin support
 
