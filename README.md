@@ -1,13 +1,17 @@
 # StreamController
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Made with Python](https://img.shields.io/badge/Made%20with-Python-ff7b3f.svg)](https://www.python.org/)
+[![RPM Release](https://img.shields.io/badge/RPM-latest-blueviolet?logo=fedora)](https://github.com/radiotaiso/StreamController/releases/latest)
+[![forthebadge](https://forthebadge.com/images/featured/featured-gluten-free.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/it-works-no-idea-why.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/you-didnt-ask-for-this.svg)](https://forthebadge.com)
 
 ## WAIT A MINUTE
 
 This repo is only a wrapper with a github action set up to auto build a `.rpm` package of `StreamController` the motivation behind this is my despise for flatpaks and that I've been using fedora on main.
 
 The only changes are in `/rpm` otherwise it is the same as upstream.
+
+![Wait a minute kid](https://media1.tenor.com/m/IJwsfw7ToiQAAAAd/wait-what.gif)
 
 ## Back to regular programming
 
