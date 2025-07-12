@@ -66,17 +66,15 @@ Lock your Stream deck when your system is locked, preventing unwanted use from t
 
 ## Installation
 
+RPM Package is not affiliated with StreamController, I just hate flatpaks.
+
 To install StreamController, click the button below or follow the [installation instructions](https://streamcontroller.github.io/docs/latest/installation/):
 
-<a href='https://flathub.org/apps/details/com.core447.StreamController'><img width='200px' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
+Download the latest `.rpm` file from [the release page](https://github.com/radiotaiso/StreamController/releases)
 
-To install the head of main as a Flatpak just run the following command:
+`sudo dnf install streamcontroller-1.5.0beta.11-1.fc42.x86_64.rpm`
 
-```sh
-bash -c "$(wget -O - https://raw.githubusercontent.com/StreamController/StreamController/main/flatpak/install.sh)"
-```
-
-#### Unofficial Packages
+### Unofficial Packages
 
 The following packages are functional but unofficial and maintained by our community:
 
