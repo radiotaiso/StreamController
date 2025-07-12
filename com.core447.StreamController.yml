@@ -1,0 +1,94 @@
+id: com.core447.StreamController
+runtime: org.gnome.Platform
+runtime-version: '47'
+sdk: org.gnome.Sdk
+command: launch.sh
+
+finish-args:
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --share=ipc
+  - --device=dri
+  - --filesystem=home
+  - --share=network
+  - --socket=pulseaudio
+  - --device=all                              # Needed to communicate with the decks
+  - --talk-name=org.freedesktop.Flatpak       # Allow plugins to run system commands
+  - --talk-name=org.mpris.MediaPlayer2.*      # Media control
+  - --talk-name=org.kde.kdeconnect            # Access to KDEConnect
+  - --talk-name=org.gnome.Shell               # Interact with Gnome - used to open the "Install extension" dialog
+  - --talk-name=org.gnome.Shell.Extensions.StreamController
+  - --talk-name=org.gnome.ScreenSaver
+  - --talk-name=org.cinnamon.ScreenSaver
+  - --talk-name=org.freedesktop.ScreenSaver
+  - --system-talk-name=org.freedesktop.UPower # Access to power management - used to get battery status
+
+modules:
+  - pypi-requirements.yaml
+  - shared-modules/libusb/libusb.json
+
+  - name: hidapi-libusb
+    buildsystem: autotools
+    sources:
+      - type: git
+        url: https://github.com/libusb/hidapi.git
+        tag: hidapi-0.14.0
+
+  - name: gusb
+    buildsystem: meson
+    config-opts:
+      - -Ddocs=false
+      - -Dtests=false
+      - -Dvapi=false
+    sources:
+      - type: git
+        url: https://github.com/hughsie/libgusb.git
+        tag: 0.4.9
+
+  - name: libpeas
+    buildsystem: meson
+    cleanup:
+      - /bin/*
+      - /lib/peas-demo
+    config-opts:
+      - -Dgtk_doc=false
+      - -Dlua51=false
+    sources:
+      - type: git
+        url: https://gitlab.gnome.org/GNOME/libpeas.git
+        tag: 2.0.5
+
+  - name: libportal
+    buildsystem: meson
+    config-opts:
+      - -Dbackend-gtk3=disabled
+      - -Dbackend-gtk4=enabled
+      - -Dbackend-qt5=disabled
+      - -Ddocs=false
+      - -Dtests=false
+      - -Dvapi=false
+    sources:
+      - type: git
+        url: https://github.com/flatpak/libportal.git
+        tag: 0.8.1
+
+  - name: StreamController
+    buildsystem: simple
+    build-commands:
+      - mkdir -p /app/bin
+      - cp . /app/bin/StreamController -r
+
+      # - "pip install -r requirements.txt --ignore-installed --prefix=/app"
+      
+      - install -D flatpak/launch.sh /app/bin/launch.sh
+      - chmod +x /app/bin/launch.sh
+      - install -D flatpak/icon_256.png /app/share/icons/hicolor/256x256/apps/com.core447.StreamController.png
+      - install -D flatpak/launch.desktop /app/share/applications/com.core447.StreamController.desktop
+      - install -D flatpak/com.core447.StreamController.metainfo.xml /app/share/metainfo/com.core447.StreamController.metainfo.xml
+    sources:
+      - type: git
+        url: https://github.com/StreamController/StreamController.git
+        branch: main
+
+# Install via: flatpak-builder --repo=repo --force-clean --install --user build-dir com.core447.StreamController.yml
+# Use git submodule update --init if the shared-modules folder is empty
