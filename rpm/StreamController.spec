@@ -224,7 +224,7 @@ fi
 %config(noreplace) %{_sysconfdir}/udev/rules.d/70-streamcontroller.rules
 
 %changelog
-* Fri Jun 28 2025 StreamController Team <dev@streamcontroller.org> - 1.5.2-1
+* Fri Jun 27 2025 StreamController Team <dev@streamcontroller.org> - 1.5.2-1
 - Fixed RPM packaging dependencies (python3-pycairo -> python3-cairo)
 - Enhanced RPM packaging with proper dependency management
 - Added comprehensive system integration

@@ -31,22 +31,60 @@ jobs:
       - name: Add upstream remote
         run: git remote add upstream https://github.com/StreamController/StreamController.git
 
-      - name: Sync with upstream
+      - name: Sync with upstream (reset-based)
         run: |
+          # Fetch upstream changes
           git fetch upstream
-          git merge upstream/main --no-edit --allow-unrelated-histories || (git status && git diff && exit 1)
-          git push origin rpm-autobuild
+          
+          # Save current RPM-specific files
+          mkdir -p /tmp/rpm-backup
+          cp -r rpm/ /tmp/rpm-backup/ || true
+          cp -r .github/ /tmp/rpm-backup/ || true
+          
+          # Reset to upstream main (this removes merge conflicts)
+          git reset --hard upstream/main
+          
+          # Restore RPM-specific files
+          cp -r /tmp/rpm-backup/rpm/ ./ || true
+          cp -r /tmp/rpm-backup/.github/ ./ || true
+          
+          # Add and commit changes if any
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "Sync with upstream and restore RPM build files"
+          fi
+          
+          # Force push to update the branch
+          git push origin rpm-autobuild --force
+
+      - name: Check for version changes
+        id: version_check
+        run: |
+          CURRENT_VERSION=$(grep -m 1 'Version:' rpm/StreamController.spec | awk '{print $2}')
+          echo "::set-output name=version::$CURRENT_VERSION"
+          
+          # Check if this version already has a release
+          if git tag -l "v$CURRENT_VERSION" | grep -q "v$CURRENT_VERSION"; then
+            echo "::set-output name=skip_release::true"
+            echo "Version $CURRENT_VERSION already has a release, skipping..."
+          else
+            echo "::set-output name=skip_release::false"
+            echo "Building new version: $CURRENT_VERSION"
+          fi
 
       - name: Build RPM
+        if: steps.version_check.outputs.skip_release == 'false'
         run: |
           cd rpm
           make rpm
 
       - name: Get Version
+        if: steps.version_check.outputs.skip_release == 'false'
         id: get_version
         run: echo "::set-output name=version::$(grep -m 1 'Version:' rpm/StreamController.spec | awk '{print $2}')"
 
       - name: Create Release
+        if: steps.version_check.outputs.skip_release == 'false'
         id: create_release
         uses: actions/create-release@v1
         env:
@@ -56,10 +94,13 @@ jobs:
           release_name: Release v${{ steps.get_version.outputs.version }}
           body: |
             Automated release based on upstream changes.
+            
+            Changes synced from upstream StreamController/StreamController at commit: ${{ github.sha }}
           draft: false
           prerelease: false
 
       - name: Upload RPM Asset
+        if: steps.version_check.outputs.skip_release == 'false'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -68,3 +109,9 @@ jobs:
           asset_path: ~/rpmbuild/RPMS/x86_64/streamcontroller-${{ steps.get_version.outputs.version }}-1.fc42.x86_64.rpm
           asset_name: streamcontroller-${{ steps.get_version.outputs.version }}.rpm
           asset_content_type: application/x-rpm
+
+      - name: Skip notification
+        if: steps.version_check.outputs.skip_release == 'true'
+        run: |
+          echo "No new version to build. Current version ${{ steps.version_check.outputs.version }} already has a release."
+          echo "Workflow completed successfully with no action needed."
