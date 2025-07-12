@@ -1,9 +1,8 @@
 name: RPM Autobuild (Simple)
 
 on:
-  schedule:
-    - cron: '0 2 20 * *' # Runs monthly on the 20th at 2 AM UTC
-  workflow_dispatch:
+  workflow_dispatch: # Allow manual triggering
+  workflow_call: # Allow being called by other workflows
 
 jobs:
   build-rpm:
@@ -81,10 +80,10 @@ jobs:
           echo "Built from tag with local RPM files." >> "$NOTES_FILE"
           echo "" >> "$NOTES_FILE"
           echo "Upstream release: https://github.com/StreamController/StreamController/releases/tag/$TAG" >> "$NOTES_FILE"
-          gh release view $RPM_VERSION --repo ${{ github.repository }} || \
-            gh release create $RPM_VERSION \
+          gh release view $TAG --repo ${{ github.repository }} || \
+            gh release create $TAG \
               --repo ${{ github.repository }} \
-              --title "Release $RPM_VERSION" \
+              --title "Release $TAG" \
               --notes-file "$NOTES_FILE"
 
       - name: Upload RPM Asset with gh
@@ -93,7 +92,7 @@ jobs:
         run: |
           TAG=${{ steps.get_tag.outputs.tag }}
           RPM_VERSION=$(echo "$TAG" | tr -d '-')
-          gh release upload $RPM_VERSION /github/home/rpmbuild/RPMS/x86_64/streamcontroller-${RPM_VERSION}-1.fc42.x86_64.rpm --clobber --repo ${{ github.repository }}
+          gh release upload $TAG /github/home/rpmbuild/RPMS/x86_64/streamcontroller-${RPM_VERSION}-1.fc42.x86_64.rpm --clobber --repo ${{ github.repository }}
 
       - name: Cleanup Temporary Branch
         run: |

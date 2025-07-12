@@ -1,0 +1,59 @@
+name: Check Upstream Tags
+
+on:
+  schedule:
+    - cron: '0 10 * * 1' # Every Monday at 10 AM UTC
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  check-and-trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install GitHub CLI
+        run: |
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+          sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+          sudo apt update
+          sudo apt install gh -y
+
+      - name: Get latest upstream tag
+        id: get_upstream_tag
+        run: |
+          LATEST_TAG=$(git ls-remote --tags https://github.com/StreamController/StreamController.git | awk '{print $2}' | grep -E '^refs/tags/[0-9]' | sed 's|refs/tags/||' | sort -V | tail -n1)
+          echo "Latest upstream tag: $LATEST_TAG"
+          echo "tag=$LATEST_TAG" >> $GITHUB_OUTPUT
+
+      - name: Check if release exists in fork
+        id: check_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG=${{ steps.get_upstream_tag.outputs.tag }}
+          echo "Checking if release $TAG exists in fork..."
+          
+          if gh release view $TAG --repo ${{ github.repository }} &> /dev/null; then
+            echo "Release $TAG already exists in fork. No action needed."
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "Release $TAG does not exist in fork. Will trigger RPM build."
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Trigger RPM build
+        if: steps.check_release.outputs.exists == 'false'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG=${{ steps.get_upstream_tag.outputs.tag }}
+          echo "Triggering RPM build for tag: $TAG"
+          gh workflow run rpm-autobuild-simple.yml --repo ${{ github.repository }}
+
+      - name: Log result
+        run: |
+          TAG=${{ steps.get_upstream_tag.outputs.tag }}
+          if [[ "${{ steps.check_release.outputs.exists }}" == "true" ]]; then
+            echo "✓ No action needed - Release $TAG already exists"
+          else
+            echo "🚀 Triggered RPM build for new tag: $TAG"
+          fi
