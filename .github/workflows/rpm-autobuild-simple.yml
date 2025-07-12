@@ -62,29 +62,26 @@ jobs:
           git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           git push --force origin rpm-autobuild-tmp
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ steps.get_version.outputs.version }}
-          release_name: Release v${{ steps.get_version.outputs.version }}
-          body: |
-            Automated release based on upstream changes.
-            Built from main branch with local RPM files.
-          draft: false
-          prerelease: false
+      - name: Install GitHub CLI
+        run: |
+          dnf install -y gh
 
-      - name: Upload RPM Asset
-        uses: actions/upload-release-asset@v1
+      - name: Create Release with gh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: /github/home/rpmbuild/RPMS/x86_64/streamcontroller-${{ steps.get_version.outputs.version }}-1.fc42.x86_64.rpm
-          asset_name: streamcontroller-${{ steps.get_version.outputs.version }}.rpm
-          asset_content_type: application/x-rpm
+        run: |
+          VERSION=${{ steps.get_version.outputs.version }}
+          gh release view v$VERSION || \
+            gh release create v$VERSION \
+              --title "Release v$VERSION" \
+              --notes "Automated release based on upstream changes.\nBuilt from main branch with local RPM files."
+
+      - name: Upload RPM Asset with gh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=${{ steps.get_version.outputs.version }}
+          gh release upload v$VERSION /github/home/rpmbuild/RPMS/x86_64/streamcontroller-${VERSION}-1.fc42.x86_64.rpm --clobber
 
       - name: Cleanup Temporary Branch
         run: |
