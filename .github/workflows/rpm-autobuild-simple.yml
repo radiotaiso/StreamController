@@ -52,6 +52,7 @@ jobs:
       - name: Create Temporary Build Branch
         run: |
           cd buildroot
+          rm -rf .git
           git init
           git config user.name "GitHub Botcho"
           git config user.email "actions@github.com"
