@@ -70,24 +70,30 @@ jobs:
           git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           git push --force origin rpm-autobuild-tmp
 
-      - name: Create Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          TAG=${{ steps.get_tag.outputs.tag }}
-          gh release view $TAG --repo ${{ github.repository }} || \
-            gh release create $TAG \
-              --repo ${{ github.repository }} \
-              --title "Release $TAG" \
-              --notes "Automated release based on upstream tag $TAG. \nBuilt from tag with local RPM files."
-
-      - name: Upload RPM Asset
+      - name: Create Release with gh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TAG=${{ steps.get_tag.outputs.tag }}
           RPM_VERSION=$(echo "$TAG" | tr -d '-')
-          gh release upload $TAG /github/home/rpmbuild/RPMS/x86_64/streamcontroller-${RPM_VERSION}-1.fc42.x86_64.rpm --clobber --repo ${{ github.repository }}
+          NOTES_FILE=$(mktemp)
+          echo "Automated release based on upstream tag $TAG." > "$NOTES_FILE"
+          echo "Built from tag with local RPM files." >> "$NOTES_FILE"
+          echo "" >> "$NOTES_FILE"
+          echo "Upstream release: https://github.com/StreamController/StreamController/releases/tag/$TAG" >> "$NOTES_FILE"
+          gh release view $RPM_VERSION --repo ${{ github.repository }} || \
+            gh release create $RPM_VERSION \
+              --repo ${{ github.repository }} \
+              --title "Release $RPM_VERSION" \
+              --notes-file "$NOTES_FILE"
+
+      - name: Upload RPM Asset with gh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG=${{ steps.get_tag.outputs.tag }}
+          RPM_VERSION=$(echo "$TAG" | tr -d '-')
+          gh release upload $RPM_VERSION /github/home/rpmbuild/RPMS/x86_64/streamcontroller-${RPM_VERSION}-1.fc42.x86_64.rpm --clobber --repo ${{ github.repository }}
 
       - name: Cleanup Temporary Branch
         run: |
