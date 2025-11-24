@@ -23,10 +23,18 @@ import gi
 
 from src.windows.Store.ResponsibleNotesDialog import ResponsibleNotesDialog
 from src.windows.Donate.DonateWindow import DonateWindow
+
+# Import globals first to get IS_MAC
+import globals as gl
+
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
-gi.require_version("Xdp", "1.0")
-from gi.repository import Gtk, Adw, Gdk, Gio, Xdp, GLib
+if not gl.IS_MAC:
+    gi.require_version("Xdp", "1.0")
+
+from gi.repository import Gtk, Adw, Gdk, Gio, GLib
+if not gl.IS_MAC:
+    from gi.repository import Xdp
 
 # Import Python modules
 from loguru import logger as log
@@ -155,6 +163,8 @@ class App(Adw.Application):
             f.write("")
 
     def show_permissions(self):
+        if gl.IS_MAC:
+            return
         portal = Xdp.Portal.new()
         if not portal.running_under_flatpak():
             return
@@ -187,8 +197,10 @@ class App(Adw.Application):
         gl.plugin_manager.loop_daemon = False
         log.debug("non-daemon threads:")
         for thread in threading.enumerate():
-            if thread.daemon:
-                continue
+            if thread is not threading.current_thread():
+                thread.join(timeout=2.0)
+                if thread.is_alive():
+                    log.error(f"Thread {thread.name} did not exit in time")
             log.debug(f"name: {thread.name}, id: {thread.ident} id2: {thread.native_id}")
 
         for child in multiprocessing.active_children():
