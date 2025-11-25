@@ -46,11 +46,6 @@ jobs:
           RPM_VERSION=$(echo "$TAG" | tr -d '-')
           sed -i "s/^Version:.*/Version:        $RPM_VERSION/" buildroot/rpm/StreamController.spec
 
-      - name: Install Python Dependencies
-        run: |
-          cd buildroot
-          pip3 install -r requirements.txt
-
       - name: Build RPM
         run: |
           cd buildroot/rpm
