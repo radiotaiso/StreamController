@@ -16,12 +16,18 @@ SPEC_FILE="$RPM_DIR/StreamController.spec"
 VERSION=$(grep "^Version:" "$SPEC_FILE" | awk '{print $2}')
 RELEASE=$(grep "^Release:" "$SPEC_FILE" | awk '{print $2}' | cut -d'%' -f1)
 PACKAGE_NAME="streamcontroller"
+TARGET_DIST=${TARGET_DIST:-$(rpm --eval '%{?dist}')}  # Allow overriding target distro tag
+
+if [ -z "$TARGET_DIST" ]; then
+    TARGET_DIST=".fc43"
+fi
 
 echo "StreamController RPM Build Script"
 echo "=================================="
 echo "Package: $PACKAGE_NAME"
 echo "Version: $VERSION"
 echo "Release: $RELEASE"
+echo "Dist tag: $TARGET_DIST"
 echo "Source:  $REPO_ROOT"
 echo "Build:   $BUILD_DIR"
 echo ""
@@ -102,13 +108,15 @@ cd "$BUILD_DIR"
 echo "Building source RPM..."
 rpmbuild -bs "SPECS/$(basename "$SPEC_FILE")" \
     --define "_topdir $BUILD_DIR" \
-    --define "_version $VERSION"
+    --define "_version $VERSION" \
+    --define "dist $TARGET_DIST"
 
 # Build binary RPM
 echo "Building binary RPM..."
 rpmbuild -bb "SPECS/$(basename "$SPEC_FILE")" \
     --define "_topdir $BUILD_DIR" \
-    --define "_version $VERSION"
+    --define "_version $VERSION" \
+    --define "dist $TARGET_DIST"
 
 # Report results
 echo ""

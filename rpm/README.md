@@ -16,6 +16,22 @@ make -C rpm/ rpm
 
 The built RPM file will be located in `~/rpmbuild/RPMS/`.
 
+### Targeting Fedora 43 builds
+
+The build script now honors a `TARGET_DIST` environment variable so we can force
+the RPM dist tag even when CI runners lag behind the latest Fedora release. By
+default it uses the host's `%{?dist}` value and falls back to `.fc43` if unset.
+To guarantee Fedora 43 tagging (useful when GitHub Actions is still on a 42
+image), run:
+
+```bash
+TARGET_DIST=.fc43 make -C rpm/ rpm
+```
+
+That value is passed to `rpmbuild -bs/-bb` via `--define 'dist …'`, ensuring the
+resulting packages are labeled `*.fc43`. Adjust the variable if you need to
+target a different Fedora release.
+
 ## Runtime Python Dependencies
 
 This fork intentionally keeps the upstream application code unchanged, so no
@@ -26,8 +42,7 @@ libraries required at startup, including:
 
 - `python3-loguru` – provides the `loguru` logger used throughout `main.py` and
     `globals.py`.
-- `python3-Pyro5` – provides `Pyro5.api`, which StreamController uses for its
-    IPC layer.
+- `python3-opencv` – provides the `cv2` module used by the page settings UI.
 - `python3-pyusb` – provides the `usb.core`/`usb.util` modules that handle
     Stream Deck USB discovery.
 
@@ -44,6 +59,12 @@ those modules with pip *after* installing the RPM. For example, to satisfy the
 
 ```bash
 python3 -m pip install --user streamdeck
+```
+
+Likewise, `Pyro5` currently has no native Fedora package, so install it with:
+
+```bash
+python3 -m pip install --user Pyro5
 ```
 
 Feel free to install into a virtual environment instead if you prefer to avoid
