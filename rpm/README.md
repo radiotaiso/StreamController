@@ -36,40 +36,40 @@ target a different Fedora release.
 
 This fork intentionally keeps the upstream application code unchanged, so no
 third-party Python modules are vendored inside the RPM. Instead, the spec file
-declares the runtime dependencies that Fedoralike systems already ship. When
-you install the generated RPM, DNF will automatically pull in the key Python
-libraries required at startup, including:
+declares every runtime dependency that Fedora/Nobara already ship as
+`python3-*` packages. Installing the RPM via DNF now brings in:
 
-- `python3-loguru` – provides the `loguru` logger used throughout `main.py` and
-    `globals.py`.
-- `python3-opencv` – provides the `cv2` module used by the page settings UI.
-- `python3-pyusb` – provides the `usb.core`/`usb.util` modules that handle
-    Stream Deck USB discovery.
+- Core UI/runtime libs: `python3-gobject`, `python3-typing-extensions`,
+    `python3-requests`, `python3-yaml`, `python3-psutil`,
+    `python3-setproctitle`, `python3-loguru`.
+- Graphics & media helpers: `python3-pillow` (PIL), `python3-opencv` (`cv2`),
+    `python3-cairosvg`, `python3-fonttools`, `python3-imageio`,
+    `python3-matplotlib`, `python3-numpy`, `python3-packaging`.
+- Hardware/Wayland integration: `python3-pyusb` (`usb`), `python3-evdev`,
+    `python3-async-lru`, `python3-pyclip`, `python3-pywayland` (`import wayland`),
+    `python3-rpyc`, plus the long-standing GTK stack dependencies.
+- Miscellaneous helpers: `python3-fuzzywuzzy` for string matching and
+    `python3-cairo` for rendering support.
 
-For the full list of packages, refer to `Requires:` inside
+For the authoritative list, refer to the `Requires:` block in
 `rpm/StreamController.spec`.
 
 ### Modules without Fedora RPMs
 
-Some upstream Python libraries (most notably the StreamDeck SDK) are not
-currently packaged as `python3-*` RPMs on Fedora/Nobara. Because this fork must
-not modify upstream sources or vendor additional code, you will need to install
-those modules with pip *after* installing the RPM. For example, to satisfy the
-`StreamDeck` module import:
+Some upstream Python libraries (most notably the StreamDeck SDK and the plugin
+tooling helpers) are still missing from the Fedora/Nobara repos. Because this
+fork must not modify upstream sources or vendor additional code, install the
+following modules with pip *after* installing the RPM (system-wide or in a
+virtualenv, your choice):
 
 ```bash
-python3 -m pip install --user streamdeck
+python3 -m pip install --user streamdeck Pyro5 streamcontroller_plugin_tools \
+    usbmonitor videoprops indexed_bzip2
 ```
 
-Likewise, `Pyro5` currently has no native Fedora package, so install it with:
-
-```bash
-python3 -m pip install --user Pyro5
-```
-
-Feel free to install into a virtual environment instead if you prefer to avoid
-per-user installs. Repeat the same approach for any other Python dependency
-that lacks a native Fedora RPM.
+Those six packages cover every import that currently lacks a native RPM (`pip`
+will skip ones you already installed). If Fedora ever gains official packages
+for them, feel free to drop the manual step and rely solely on DNF.
 
 ## Key Files
 

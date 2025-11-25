@@ -26,7 +26,10 @@ Requires:       gobject-introspection
 
 # Core Python dependencies
 Requires:       python3 >= 3.11
+Requires:       python3-async-lru
 Requires:       python3-dbus
+Requires:       python3-cairosvg
+Requires:       python3-evdev
 Requires:       python3-requests
 Requires:       python3-cairo
 Requires:       python3-pillow
@@ -34,7 +37,17 @@ Requires:       python3-yaml
 Requires:       python3-psutil
 Requires:       python3-setproctitle
 Requires:       python3-loguru
+Requires:       python3-fonttools
+Requires:       python3-fuzzywuzzy
+Requires:       python3-imageio
+Requires:       python3-matplotlib
+Requires:       python3-numpy
+Requires:       python3-packaging
+Requires:       python3-pyclip
+Requires:       python3-pywayland
 Requires:       python3-opencv
+Requires:       python3-rpyc
+Requires:       python3-typing-extensions
 
 # Optional but recommended dependencies
 Recommends:     python3-pulsectl
