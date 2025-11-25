@@ -34,7 +34,7 @@ Requires:       python3-yaml
 Requires:       python3-psutil
 Requires:       python3-setproctitle
 Requires:       python3-loguru
-Requires:       python3-Pyro5
+Requires:       python3-opencv
 
 # Optional but recommended dependencies
 Recommends:     python3-pulsectl
