@@ -7,7 +7,7 @@ on:
 jobs:
   build-rpm:
     runs-on: ubuntu-latest
-    container: fedora:latest
+    container: fedora:43
 
     steps:
       - name: Install System Dependencies
@@ -54,7 +54,7 @@ jobs:
       - name: Build RPM
         run: |
           cd buildroot/rpm
-          make rpm
+          TARGET_DIST=.fc43 make rpm
 
       - name: Create Temporary Build Branch
         run: |
@@ -92,7 +92,7 @@ jobs:
         run: |
           TAG=${{ steps.get_tag.outputs.tag }}
           RPM_VERSION=$(echo "$TAG" | tr -d '-')
-          gh release upload $TAG /github/home/rpmbuild/RPMS/x86_64/streamcontroller-${RPM_VERSION}-1.fc42.x86_64.rpm --clobber --repo ${{ github.repository }}
+          gh release upload $TAG /github/home/rpmbuild/RPMS/x86_64/streamcontroller-${RPM_VERSION}-1.fc43.x86_64.rpm --clobber --repo ${{ github.repository }}
 
       - name: Cleanup Temporary Branch
         run: |
