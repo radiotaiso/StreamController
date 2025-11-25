@@ -1,0 +1,588 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright 2024 Core447 -->
+<component type="desktop-application">
+  <id>com.core447.StreamController</id>
+
+  <developer_name translate="no">Core447</developer_name>
+  <developer id="com.core447">
+    <name translate="no">Core447</name>
+  </developer>
+
+  <launchable type="desktop-id">com.core447.StreamController.desktop</launchable>
+
+  <name>StreamController</name>
+  <summary>Control your Elgato Stream Decks with plugin support</summary>
+
+  <metadata_license>CC-BY-4.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+
+  <recommends>
+    <display_length compare="ge">850</display_length>
+  </recommends>
+
+  <categories>
+    <category>System</category>
+    <category>Utility</category>
+  </categories>
+
+  <keywords>
+    <keyword translate="no">Streaming</keyword>
+    <keyword translate="no">Elgato Stream Deck</keyword>
+    <keyword translate="no">GTK</keyword>
+  </keywords>
+
+  <branding>
+    <color type="primary" scheme_preference="light">#244b62</color>
+    <color type="primary" scheme_preference="dark">#244b62</color>
+  </branding>
+
+  <url type="homepage">https://github.com/StreamController/StreamController</url>
+  <url type="bugtracker">https://github.com/StreamController/StreamController/issues</url>
+  <url type="contribute">https://github.com/StreamController/StreamController</url>
+  <releases>
+    <release version="1.5.0-beta.12" date="2025-10-11">
+      <description translatable="no">
+        <p>Features:</p>
+        <ul>
+          <li>Add new cli options</li>
+        </ul>
+        <p>Improvements:</p>
+        <ul>
+          <li>Add a scroll delay for long labels</li>
+          <li>Use more distinct path for icon</li>
+        </ul>
+        <p>Fixes:</p>
+        <ul>
+          <li>Crashes regarding ComboRow</li>
+          <li>Missing translation in onboarding dialog</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.5.0-beta.11" date="2025-06-04">
+      <description translatable="no">
+        <p>Features:</p>
+        <ul>
+          <li>Auto scroll too long labels</li>
+          <li>Add support for Stream Deck Modules</li>
+        </ul>
+        <p>Fixes:</p>
+        <ul>
+          <li>Not updating dials when there is a background video</li>
+          <li>Tray icon not showing up on plasma</li>
+          <li>Store not loading if a single plugin is misconfigured</li>
+          <li>Error for rotated decks that aren't 3x5</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.5.0-beta.10" date="2025-04-18">
+      <description translatable="no">
+        <p>Fixes:</p>
+        <ul>
+          <li>Wrong input mapping when deck is rotated 90 or 270 degrees</li>
+          <li>Excessive startup times for some users</li>
+          <li>Weird behaviour of GenerativeUI in some cases</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.5.0-beta.9" date="2025-04-09">
+      <description translatable="no">
+        <p>Features:</p>
+        <ul>
+          <li>Option to configure deck rotation</li>
+          <li>Auto-lock support for Hyprland</li>
+        </ul>
+
+        <p>Improvements:</p>
+        <ul>
+          <li>Add Generative UI (for devs)</li>
+          <li>Add input specific action bases (for devs)</li>
+          <li>Add option to set svg strings as media (for devs)</li>
+          <li>Actions can define custom events</li>
+        </ul>
+
+        <p>Fixes:</p>
+        <ul>
+          <li>Fix log spamming on KDE when kdotool is not installed</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.5.0-beta.8" date="2025-02-27">
+      <description translatable="no">
+        <p>Features:</p>
+        <ul>
+          <li>Add Action Groups</li>
+          <li>Add auto page switching under KDE when kdotool is installed</li>
+          <li>Add tray icon</li>
+          <li>Add plugins settings page to the settings window</li>
+        </ul>
+
+        <p>Improvements:</p>
+        <ul>
+          <li>Increate max screensaver delay from 1h to 24h</li>
+        </ul>
+
+        <p>Fixes:</p>
+        <ul>
+          <li>Showing "no decks available" in header when no pages</li>
+          <li>Overwritting desktop file if already present</li>
+          <li>Deck lock during screensaver can be bypassed by reconnecting the deck</li>
+          <li>Copy/paste of buttons not working under KDE+Wayland</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.5.0-beta.7" date="2024-11-20">
+      <description translatable="no">
+        <p>Features:</p>
+        <ul>
+          <li>Add Spanish translations</li>
+          <li>Add option to change the outline color of labels</li>
+          <li>Add default font for labels</li>
+          <li>New option to configure default font</li>
+          <li>Add auto page change for swaywm</li>
+          <li>Add support for screensaver under Cinnamon</li>
+          <li>Add ability to use line breaks in labels</li>
+          <li>Add basic support for the Stream Deck Neo (limited to the normal buttons)</li>
+        </ul>
+
+        <p>Improvements:</p>
+        <ul>
+          <li>Use git to download plugins in dev mode</li>
+          <li>Add link to wiki when no decks are being detected</li>
+          <li>Update dependencies</li>
+        </ul>
+
+        <p>Fixes:</p>
+        <ul>
+          <li>Crash if label is not a string</li>
+          <li>Error launching action backend in terminal</li>
+          <li>Swipes not working for Stream Deck Plus</li>
+          <li>Error when image size is 0</li>
+          <li>Error on X11 when decoding the active window</li>
+          <li>Not blocking action labels and images during screensaver</li>
+          <li>Not reloading page after plugin uninstall</li>
+          <li>Error when XDG_CURRENT_DESKTOP is not set</li>
+          <li>Font weights not stored</li>
+          <li>Removing action not updating input on active page</li>
+          <li>Not always uninstalling plugins correctly</li>
+          <li>Crash when streamdeck-ui has no states key</li>
+          <li>Registering dial and touch event when used to wake up</li>
+          <li>Not loading screen brightness from page</li>
+          <li>Ignoring font styles and weights</li>
+          <li>Decks not always reconnecting</li>
+          <li>Error when renaming page to the same name</li>
+          <li>Keeping old page backups indefinitely</li>
+          <li>Crash when drag and dropping buttons with actions</li>
+          <li>Showing "No decks available" in header when no pages are available</li>
+          <li>No proper background color permission handling</li>
+          <li>Loading action objects of inputs that aren't available on deck</li>
+          <li>Weblinks not opening</li>
+        </ul>
+      </description>
+    </release>
+
+    <release version="1.5.0-beta.6" date="2024-10-25">
+      <description translatable="no">
+        <p>Fixes:</p>
+        <ul>
+          <li>Fix: Ignoring choosen brightness for screensaver</li>
+          <li>Fix: Actions cannot change background color</li>
+        </ul>
+      </description>
+    </release>
+
+    <release version="1.5.0-beta.5" date="2024-06-28">
+      <description translatable="no">
+        <p>Features:</p>
+        <ul>
+          <li>Add option to add custom stores and plugins</li>
+          <li>Add options to control which action should control labels and the image</li>
+          <li>Add state management</li>
+          <li>Add support for the Stream Deck Plus</li>
+          <li>Add key hold event</li>
+          <li>Add EventAssigner</li>
+          <li>Add auto lock support for KDE</li>
+          <li>Create page backups before each launch</li>
+          <li>Add discord link to the onboarding dialog</li>
+        </ul>
+        <p>Improvements:</p>
+        <ul>
+          <li>Improve store caching</li>
+          <li>Improve restore from suspend (beta)</li>
+          <li>Ship icons</li>
+          <li>Improve deck detection after reconnection</li>
+          <li>Show progress bar when installing plugins from the onboarding dialog</li>
+        </ul>
+        <p>Fixes:</p>
+        <ul>
+          <li>Fix: Plugin wide settings get reset on each update</li>
+          <li>Fix: Potential data loss when saving pages</li>
+          <li>Allow change of data path in the settings</li>
+          <li>Fix: Error for non RGB(A) images</li>
+          <li>Fix: Using user .gitconfig</li>
+          <li>Fix: misc bugs</li>
+        </ul>
+      </description>
+    </release>
+
+    <release version="1.5.0-beta.4" date="2024-05-07">
+      <description translatable="no">
+        <p>Features:</p>
+        <ul>
+          <li>Allow image sizes above 100%</li>
+          <li>Add remove button to custom asset chooser</li>
+          <li>Add notifications for asset updates</li>
+          <li>New label overwrite system</li>
+          <li>Add autostart toggle to the settings</li>
+          <li>Add automatic page switching for X11</li>
+          <li>Plugin events by G4PLS</li>
+        </ul>
+        <p>Improvements:</p>
+        <ul>
+          <li>Improve import from streamdeck-ui</li>
+          <li>Add import/export options for pages</li>
+          <li>Sort pages naturally in the page selector</li>
+          <li>Reduce page switching time in large libraries</li>
+          <li>Improve the onboarding dialog</li>
+          <li>New store backend by G4PLS</li>
+          <li>Add basic API for page changes</li>
+        </ul>
+        <p>Fixes:</p>
+        <ul>
+          <li>Fix: Deck numbers not going higher than 2</li>
+          <li>Fix: Icons not showing in UI for Pedals</li>
+          <li>Fix: Not restoring after suspend</li>
+          <li>Fix: misc bugs</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.5.0-beta.3" date="2024-05-03">
+      <description translatable="no">
+        <p>Features:</p>
+        <ul>
+          <li>Allow image sizes above 100%</li>
+          <li>Add remove button to custom asset chooser</li>
+          <li>Add notifications for asset updates</li>
+          <li>New label overwrite system</li>
+          <li>Add autostart toggle to the settings</li>
+          <li>Add automatic page switching for X11</li>
+          <li>Plugin events by G4PLS</li>
+        </ul>
+        <p>Improvements:</p>
+        <ul>
+          <li>Improve import from streamdeck-ui</li>
+          <li>Add import/export options for pages</li>
+          <li>Sort pages naturally in the page selector</li>
+          <li>Reduce page switching time in large libraries</li>
+          <li>Improve the onboarding dialog</li>
+          <li>New store backend by G4PLS</li>
+          <li>Add basic API for page changes</li>
+        </ul>
+        <p>Fixes:</p>
+        <ul>
+          <li>Fix: Deck numbers not going higher than 2</li>
+          <li>Fix: Icons not showing in UI for Pedals</li>
+          <li>Fix: Not restoring after suspend</li>
+          <li>Fix: misc bugs</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.5.0-beta.2" date="2024-05-02">
+      <description translatable="no">
+        <p>Features:</p>
+        <ul>
+          <li>Allow image sizes above 100%</li>
+          <li>Add remove button to custom asset chooser</li>
+          <li>Add notifications for asset updates</li>
+          <li>New label overwrite system</li>
+          <li>Add autostart toggle to the settings</li>
+          <li>Add automatic page switching for X11</li>
+          <li>Plugin events by G4PLS</li>
+        </ul>
+        <p>Improvements:</p>
+        <ul>
+          <li>Improve import from streamdeck-ui</li>
+          <li>Add import/export options for pages</li>
+          <li>Sort pages naturally in the page selector</li>
+          <li>Reduce page switching time in large libraries</li>
+          <li>Improve the onboarding dialog</li>
+          <li>New store backend by G4PLS</li>
+          <li>Add basic API for page changes</li>
+        </ul>
+        <p>Fixes:</p>
+        <ul>
+          <li>Fix: Deck numbers not going higher than 2</li>
+          <li>Fix: Icons not showing in UI for Pedals</li>
+          <li>Fix: Not restoring after suspend</li>
+          <li>Fix: misc bugs</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.5.0-beta.1" date="2024-05-01">
+      <description translatable="no">
+        <p>Features:</p>
+        <ul>
+          <li>Allow image sizes above 100%</li>
+          <li>Add remove button to custom asset chooser</li>
+          <li>Add notifications for asset updates</li>
+          <li>New label overwrite system</li>
+          <li>Add autostart toggle to the settings</li>
+          <li>Add automatic page switching for X11</li>
+          <li>Plugin events by G4PLS</li>
+        </ul>
+        <p>Improvements:</p>
+        <ul>
+          <li>Improve import from streamdeck-ui</li>
+          <li>Add import/export options for pages</li>
+          <li>Sort pages naturally in the page selector</li>
+          <li>Reduce page switching time in large libraries</li>
+          <li>Improve the onboarding dialog</li>
+          <li>New store backend by G4PLS</li>
+          <li>Add basic API for page changes</li>
+        </ul>
+        <p>Fixes:</p>
+        <ul>
+          <li>Fix: Deck numbers not going higher than 2</li>
+          <li>Fix: Icons not showing in UI for Pedals</li>
+          <li>Fix: Not restoring after suspend</li>
+          <li>Fix: misc bugs</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.5.0-beta" date="2024-05-01">
+      <description translatable="no">
+        <p>Features:</p>
+        <ul>
+          <li>Allow image sizes above 100%</li>
+          <li>Add remove button to custom asset chooser</li>
+          <li>Add notifications for asset updates</li>
+          <li>New label overwrite system</li>
+          <li>Add autostart toggle to the settings</li>
+          <li>Add automatic page switching for X11</li>
+          <li>Plugin events by G4PLS</li>
+        </ul>
+        <p>Improvements:</p>
+        <ul>
+          <li>Improve import from streamdeck-ui</li>
+          <li>Add import/export options for pages</li>
+          <li>Sort pages naturally in the page selector</li>
+          <li>Reduce page switching time in large libraries</li>
+          <li>Improve the onboarding dialog</li>
+          <li>New store backend by G4PLS</li>
+          <li>Add basic API for page changes</li>
+        </ul>
+        <p>Fixes:</p>
+        <ul>
+          <li>Fix: Deck numbers not going higher than 2</li>
+          <li>Fix: Icons not showing in UI for Pedals</li>
+          <li>Fix: Not restoring after suspend</li>
+          <li>Fix: misc bugs</li>
+        </ul>
+      </description>
+    </release>
+
+    <release version="1.4.11-beta" date="2024-04-14">
+      <description translatable="no">
+        <p>Bugfixes</p>
+        <p>Svg support</p>
+      </description>
+    </release>
+    <release version="1.4.10-beta" date="2024-04-11">
+      <description translatable="no">
+        <p>Bugfixes</p>
+        <p>Add loading screen to the asset manager</p>
+      </description>
+    </release>
+    <release version="1.4.9-beta" date="2024-04-10">
+      <description translatable="no">
+        <p>Bugfixes</p>
+      </description>
+    </release>
+    <release version="1.4.8-beta" date="2024-04-09">
+      <description translate="no">
+        <p>Bugfixes</p>
+      </description>
+    </release>
+    <release version="1.4.7-beta" date="2024-04-08">
+      <description translate="no">
+        <p>Bugfixes</p>
+      </description>
+    </release>
+    <release version="1.4.6-beta" date="2024-04-08">
+      <description translate="no">
+        <p>Bugfixes</p>
+        <p>Memory optimizations</p>
+      </description>
+    </release>
+    <release version="1.4.5-beta" date="2024-04-02">
+      <description translate="no">
+        <p>Bugfixes</p>
+      </description>
+    </release>
+    <release version="1.4.4-beta" date="2024-04-02">
+      <description translate="no">
+        <p>Bugfixes</p>
+      </description>
+    </release>
+    <release version="1.4.3-beta" date="2024-04-02">
+      <description translate="no">
+        <p>Bugfixes</p>
+      </description>
+    </release>
+    <release version="1.4.2-beta" date="2024-04-01">
+      <description translate="no">
+        <p>Bugfixes</p>
+      </description>
+    </release>
+    <release version="1.4.1-beta" date="2024-04-01">
+      <description translate="no">
+        <p>Bugfixes</p>
+      </description>
+    </release>
+    <release version="1.4.0-beta" date="2024-04-01">
+      <description translate="no">
+        <p>Bugfixes</p>
+      </description>
+    </release>
+    <release version="1.3.9-beta" date="2024-04-01">
+      <description translate="no">
+        <p>Bugfixes</p>
+      </description>
+    </release>
+    <release version="1.3.8-beta" date="2024-04-01">
+      <description translate="no">
+        <p>Bugfixes</p>
+      </description>
+    </release>
+    <release version="1.3.7-beta" date="2024-04-01">
+      <description translate="no">
+        <p>Bugfixes</p>
+      </description>
+    </release>
+    <release version="1.3.6-beta" date="2024-03-31">
+      <description translate="no">
+        <p>Bugfixes</p>
+      </description>
+    </release>
+    <release version="1.3.5-beta" date="2024-03-31">
+      <description translate="no">
+        <p>Bugfixes</p>
+      </description>
+    </release>
+    <release version="1.3.4-beta" date="2024-03-31">
+      <description translate="no">
+        <p>Bugfixes</p>
+        <p>Bundle icons</p>
+      </description>
+    </release>
+    <release version="1.3.3-beta" date="2024-03-30">
+      <description translate="no">
+        <p>Switch to system icons for the settings</p>
+      </description>
+    </release>
+    <release version="1.3.2-beta" date="2024-03-30">
+      <description translate="no">
+        <p>Switch to system icons for the settings</p>
+      </description>
+    </release>
+    <release version="1.3.1-beta" date="2024-03-30">
+      <description translate="no">
+        <p>Bugfixes</p>
+      </description>
+    </release>
+    <release version="1.3.0-beta" date="2024-03-30">
+      <description translate="no">
+        <p>Bugfixes</p>
+        <p>New page manager</p>
+      </description>
+    </release>
+    <release version="1.2.1-beta" date="2024-03-27">
+      <description translate="no">
+        <p>Bugfixes</p>
+      </description>
+    </release>
+    <release version="1.2.0-beta" date="2024-03-27">
+      <description translate="no">
+        <p>First beta release</p>
+        <p>Bug fixes</p>
+      </description>
+    </release>
+    <release version="1.2.0-alpha" date="2024-03-27">
+      <description translate="no">
+        <p>First release</p>
+      </description>
+    </release>
+    <release version="1.1.2-alpha" date="2024-03-25">
+      <description translate="no">
+        <p>First test release</p>
+      </description>
+    </release>
+  </releases>
+
+  <content_rating type="oars-1.0" />
+
+  <description>
+    <p>
+      An elegant Linux app for the Elgato Stream Deck featuring advanced features like plugins and
+      automatic page changing.
+    </p>
+    <p>
+      App Features:
+    </p>
+    <ul>
+      <li>Elegant GTK4 Interface</li>
+      <li>Plugin support with built-in store</li>
+      <li>Multi-deck support</li>
+      <li>Set background images &amp; videos</li>
+      <li>Set custom icons</li>
+      <li>Automatic page switching (Gnome, Hyprland, Sway &amp; X11)</li>
+      <li>Multiple states per key</li>
+    </ul>
+    <p>
+      Official Plugin Features:
+    </p>
+    <ul>
+      <li>Execute commands</li>
+      <li>Press hotkeys (X11 and Wayland)</li>
+      <li>Move mouse (X11 and Wayland)</li>
+      <li>Control OBS Studio</li>
+      <li>Control your music</li>
+      <li>Mix the volume of different apps</li>
+      <li>Switch between audio outputs</li>
+      <li>Mute your microphone</li>
+      <li>Display the current time</li>
+      <li>Send network requests</li>
+    </ul>
+    <p>
+      Supported devices
+    </p>
+    <ul>
+      <li>Stream Deck Original</li>
+      <li>Stream Deck Original V2</li>
+      <li>Stream Deck Mini</li>
+      <li>Stream Deck XL</li>
+      <li>Stream Deck Pedal</li>
+      <li>Stream Deck Plus</li>
+      <li>Stream Deck Neo (only the normal buttons)</li>
+    </ul>
+  </description>
+
+  <launchable type="desktop-id">launch.desktop</launchable>
+  <screenshots>
+    <screenshot type="default">
+      <image>
+        https://raw.githubusercontent.com/StreamController/StreamController/main/Assets/images/Screenshots/Screenshot_1.png</image>
+      <caption>The main window</caption>
+    </screenshot>
+    <screenshot>
+      <image>
+        https://raw.githubusercontent.com/StreamController/StreamController/main/Assets/images/Screenshots/Screenshot_2.png</image>
+      <caption>The main window</caption>
+    </screenshot>
+    <screenshot>
+      <image>
+        https://raw.githubusercontent.com/StreamController/StreamController/main/Assets/images/Screenshots/Screenshot_3.png</image>
+      <caption>The store</caption>
+    </screenshot>
+  </screenshots>
+</component>
