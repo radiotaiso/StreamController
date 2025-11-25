@@ -16,6 +16,40 @@ make -C rpm/ rpm
 
 The built RPM file will be located in `~/rpmbuild/RPMS/`.
 
+## Runtime Python Dependencies
+
+This fork intentionally keeps the upstream application code unchanged, so no
+third-party Python modules are vendored inside the RPM. Instead, the spec file
+declares the runtime dependencies that Fedoralike systems already ship. When
+you install the generated RPM, DNF will automatically pull in the key Python
+libraries required at startup, including:
+
+- `python3-loguru` – provides the `loguru` logger used throughout `main.py` and
+    `globals.py`.
+- `python3-Pyro5` – provides `Pyro5.api`, which StreamController uses for its
+    IPC layer.
+- `python3-pyusb` – provides the `usb.core`/`usb.util` modules that handle
+    Stream Deck USB discovery.
+
+For the full list of packages, refer to `Requires:` inside
+`rpm/StreamController.spec`.
+
+### Modules without Fedora RPMs
+
+Some upstream Python libraries (most notably the StreamDeck SDK) are not
+currently packaged as `python3-*` RPMs on Fedora/Nobara. Because this fork must
+not modify upstream sources or vendor additional code, you will need to install
+those modules with pip *after* installing the RPM. For example, to satisfy the
+`StreamDeck` module import:
+
+```bash
+python3 -m pip install --user streamdeck
+```
+
+Feel free to install into a virtual environment instead if you prefer to avoid
+per-user installs. Repeat the same approach for any other Python dependency
+that lacks a native Fedora RPM.
+
 ## Key Files
 
 The packaging process is managed by three main files in this directory:

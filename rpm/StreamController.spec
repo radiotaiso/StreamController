@@ -33,6 +33,8 @@ Requires:       python3-pillow
 Requires:       python3-yaml
 Requires:       python3-psutil
 Requires:       python3-setproctitle
+Requires:       python3-loguru
+Requires:       python3-Pyro5
 
 # Optional but recommended dependencies
 Recommends:     python3-pulsectl
@@ -43,6 +45,7 @@ Recommends:     udev
 # USB and hardware access
 Requires:       libusb1 >= 1.0.21
 Requires:       hidapi
+Requires:       python3-pyusb
 
 # System integration
 Requires:       systemd
