@@ -1,12 +1,8 @@
 # StreamController
 
-[![RPM Release](https://img.shields.io/badge/RPM-latest-blueviolet?logo=fedora)](https://github.com/radiotaiso/StreamController/releases/latest)
+⚠️ It was easier to move to Arch than keep fighting against Fedora. Won't fix.
 
-![Gluten Free](https://forthebadge.com/images/featured/featured-gluten-free.svg)
-
-![It works no idea why](https://forthebadge.com/images/badges/it-works-no-idea-why.svg)
-
-![You didn't ask for this](https://forthebadge.com/images/badges/you-didnt-ask-for-this.svg)
+kthxbai
 
 ## WAIT A MINUTE
 
